@@ -1,6 +1,7 @@
 import argparse
 from collections import namedtuple
 from pathlib import Path
+from typing import Dict, List
 
 from jinja2 import Environment, PackageLoader, select_autoescape
 from twisted.web import server, resource
@@ -27,7 +28,7 @@ env = Environment(
 )
 
 
-def format_size(nbytes: int) -> str:
+def format_size(nbytes: float) -> str:
     suffixes = ("B", "KiB", "MiB", "GiB", "TiB", "PiB", "EiB")
     suffix = 0
     while suffix < len(suffixes) - 1 and nbytes >= 1024:
@@ -37,12 +38,12 @@ def format_size(nbytes: int) -> str:
 
 
 class DirLister(DirectoryLister):
-    def render(self, request):
+    def render(self, request) -> bytes:
         dir_template = env.get_template('directory.html')
         request.setHeader('Content-Type', 'text/html; charset=utf-8')
 
         path = Path(self.path)
-        contents = {
+        contents: Dict[Category, List[Path]] = {
             FOLDERS: [],
             VIDEOS: [],
             IMAGES: [],
@@ -71,7 +72,7 @@ class DirLister(DirectoryLister):
 
 
 class DirPage(File):
-    def directoryListing(self):
+    def directoryListing(self) -> DirectoryLister:
         return DirLister(self.path,
                          self.listNames(),
                          self.contentTypes,
