@@ -96,7 +96,7 @@ def printStatus(dir: str, port: int) -> Callable[[int], None]:
     return onIP
 
 
-if __name__ == '__main__':
+def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('dir', nargs='?', default='.',
                         help="the directory to serve")
@@ -111,3 +111,7 @@ if __name__ == '__main__':
     endpoint.listen(factory)
     reactor.resolve(socket.getfqdn()).addCallback(printStatus(args.dir, args.port))
     reactor.run()
+
+
+if __name__ == '__main__':
+    main()

@@ -1,0 +1,1 @@
+recursive-include srv/templates *.html
