@@ -1,14 +1,25 @@
 import argparse
 
+from jinja2 import Environment, PackageLoader, select_autoescape
 from twisted.web import server, resource
 from twisted.web.static import File, DirectoryLister
 from twisted.internet import reactor, endpoints
 
 
+env = Environment(
+    loader=PackageLoader('srv', 'templates'),
+    autoescape=select_autoescape(['html', 'xml'])
+)
+dir_template = env.get_template('directory.html')
+
+
 class DirLister(DirectoryLister):
     def render(self, request):
         request.setHeader('Content-Type', 'text/html; charset=utf-8')
-        return "<h1>Hello, world! 🎉</h1>".encode('utf-8')
+        html = dir_template.render(
+            dirname=self.path,
+        )
+        return html.encode('utf-8')
 
 
 class DirPage(File):
