@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="srv",
-    version="0.0.4",
+    version="1.0.0",
     author="David Teresi",
     author_email="dkteresi@gmail.com",
     description="Serve a directory with one command",
