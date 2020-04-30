@@ -12,13 +12,13 @@ Category = namedtuple('Category', ['name', 'prefix'])
 VID_EXTS = ('.mp4', '.avi', '.mov', '.m4v')
 IMG_EXTS = ('.png', '.gif', '.jpeg', '.tif', '.tiff', '.jpg', '.bmp', '.svg')
 DOC_EXTS = ('.doc', '.docx', '.pdf', '.txt', '.rtf', '.html', '.epub')
-CATEGORIES = (
-    Category(name="Folders", prefix="📁"),
-    Category(name="Videos", prefix="🎬"),
-    Category(name="Images", prefix="🖼"),
-    Category(name="Documents", prefix="📄"),
-    Category(name="Other", prefix=""),
-)
+
+FOLDERS = Category(name="Folders", prefix="📁")
+VIDEOS = Category(name="Videos", prefix="🎬")
+IMAGES = Category(name="Images", prefix="🖼")
+DOCUMENTS = Category(name="Documents", prefix="📄")
+OTHER = Category(name="Other", prefix="")
+CATEGORIES = (FOLDERS, VIDEOS, IMAGES, DOCUMENTS, OTHER)
 
 
 env = Environment(
@@ -34,23 +34,23 @@ class DirLister(DirectoryLister):
 
         path = Path(self.path)
         contents = {
-            "Folders": [],
-            "Videos": [],
-            "Images": [],
-            "Documents": [],
-            "Other": []
+            FOLDERS: [],
+            VIDEOS: [],
+            IMAGES: [],
+            DOCUMENTS: [],
+            OTHER: []
         }
         for child in path.iterdir():
             if child.is_dir():
-                contents["Folders"].append(child)
+                contents[FOLDERS].append(child)
             elif child.suffix in VID_EXTS:
-                contents["Videos"].append(child)
+                contents[VIDEOS].append(child)
             elif child.suffix in IMG_EXTS:
-                contents["Images"].append(child)
+                contents[IMAGES].append(child)
             elif child.suffix in DOC_EXTS:
-                contents["Documents"].append(child)
+                contents[DOCUMENTS].append(child)
             else:
-                contents["Other"].append(child)
+                contents[OTHER].append(child)
 
         html = dir_template.render(
             path=path,
