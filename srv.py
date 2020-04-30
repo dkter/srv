@@ -1,7 +1,8 @@
 import argparse
+import socket
 from collections import namedtuple
 from pathlib import Path
-from typing import Dict, List
+from typing import Dict, List, Callable
 
 from jinja2 import Environment, PackageLoader, select_autoescape
 from twisted.web import server, resource
@@ -39,8 +40,8 @@ def format_size(nbytes: float) -> str:
 
 class DirLister(DirectoryLister):
     def render(self, request) -> bytes:
-        dir_template = env.get_template('directory.html')
         request.setHeader('Content-Type', 'text/html; charset=utf-8')
+        dir_template = env.get_template('directory.html')
 
         path = Path(self.path)
         contents: Dict[Category, List[Path]] = {
@@ -80,6 +81,12 @@ class DirPage(File):
                          self.defaultType)
 
 
+def printStatus(dir: str, port: int) -> Callable[[int], None]:
+    def onIP(ip: int):
+        print(f"Serving {dir} on {ip}:{port}")
+    return onIP
+
+
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('dir', help="the directory to serve")
@@ -90,5 +97,7 @@ if __name__ == '__main__':
     resource = DirPage(args.dir)
     factory = server.Site(resource)
     endpoint = endpoints.TCP4ServerEndpoint(reactor, args.port)
+
     endpoint.listen(factory)
+    reactor.resolve(socket.getfqdn()).addCallback(printStatus(args.dir, args.port))
     reactor.run()
