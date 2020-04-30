@@ -7,8 +7,8 @@ from twisted.internet import reactor, endpoints
 
 class DirLister(DirectoryLister):
     def render(self, request):
-        request.setHeader('Content-Type', 'text/html')
-        return b"<h1>Hello, world!</h1>"
+        request.setHeader('Content-Type', 'text/html; charset=utf-8')
+        return "<h1>Hello, world! 🎉</h1>".encode('utf-8')
 
 
 class DirPage(File):
