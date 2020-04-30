@@ -73,7 +73,7 @@
                 <h3>{{ category.name }}</h3>
                 <ul>
                     {% for file in contents[category] %}
-                        <li><a href="{{ file }}">{{ category.prefix }} {{ file.name }}</a></li>
+                        <li><a href="{{ file.relative_to(path) }}">{{ category.prefix }} {{ file.name }}</a></li>
                     {% endfor %}
                 </ul>
             </div>
