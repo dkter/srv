@@ -27,6 +27,15 @@ env = Environment(
 )
 
 
+def format_size(nbytes: int) -> str:
+    suffixes = ("B", "KiB", "MiB", "GiB", "TiB", "PiB", "EiB")
+    suffix = 0
+    while suffix < len(suffixes) - 1 and nbytes >= 1024:
+        nbytes /= 1024
+        suffix += 1
+    return f"{nbytes:.3g} {suffixes[suffix]}"
+
+
 class DirLister(DirectoryLister):
     def render(self, request):
         dir_template = env.get_template('directory.html')
@@ -56,6 +65,7 @@ class DirLister(DirectoryLister):
             path=path,
             contents=contents,
             categories=CATEGORIES,
+            format_size=format_size,
         )
         return html.encode('utf-8')
 
