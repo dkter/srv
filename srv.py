@@ -89,7 +89,8 @@ def printStatus(dir: str, port: int) -> Callable[[int], None]:
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
-    parser.add_argument('dir', help="the directory to serve")
+    parser.add_argument('dir', nargs='?', default='.',
+                        help="the directory to serve")
     parser.add_argument('-p', '--port', type=int, default=8000,
                         help="the port to listen on")
     args = parser.parse_args()
