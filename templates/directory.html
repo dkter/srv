@@ -84,7 +84,9 @@
                                     {{ category.prefix }} {{ file.name }}
                                 </span>
                                 <span class="file-size">
-                                    {{ format_size(file.stat().st_size) }}
+                                    {% if category.name != "Folders" %}
+                                        {{ format_size(file.stat().st_size) }}
+                                    {% endif %}
                                 </span>
                             </a>
                         </li>
