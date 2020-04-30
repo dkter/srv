@@ -1,4 +1,5 @@
 import argparse
+from pathlib import Path
 
 from jinja2 import Environment, PackageLoader, select_autoescape
 from twisted.web import server, resource
@@ -16,8 +17,10 @@ dir_template = env.get_template('directory.html')
 class DirLister(DirectoryLister):
     def render(self, request):
         request.setHeader('Content-Type', 'text/html; charset=utf-8')
+
+        path = Path(self.path)
         html = dir_template.render(
-            dirname=self.path,
+            path=path
         )
         return html.encode('utf-8')
 
