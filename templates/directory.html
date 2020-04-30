@@ -67,13 +67,17 @@
         <h2>{{path.parent}}</h2>
     </header>
 
-    <div class="file-group">
-        <h3>Folders</h3>
-        <ul>
-            <li><a href="...">📁 Folder 1</a></li>
-            <li><a href="...">📁 Folder 2</a></li>
-            <li><a href="...">📁 Folder 3</a></li>
-        </ul>
-    </div>
+    {% for category in categories %}
+        {% if contents[category.name] %}
+            <div class="file-group">
+                <h3>{{ category.name }}</h3>
+                <ul>
+                    {% for file in contents[category.name] %}
+                        <li><a href="{{ file }}">{{ category.prefix }} {{ file.name }}</a></li>
+                    {% endfor %}
+                </ul>
+            </div>
+        {% endif %}
+    {% endfor %}
 </body>
 </html>

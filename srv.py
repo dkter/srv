@@ -1,4 +1,5 @@
 import argparse
+from collections import namedtuple
 from pathlib import Path
 
 from jinja2 import Environment, PackageLoader, select_autoescape
@@ -7,20 +8,54 @@ from twisted.web.static import File, DirectoryLister
 from twisted.internet import reactor, endpoints
 
 
+Category = namedtuple('Category', ['name', 'prefix'])
+VID_EXTS = ('.mp4', '.avi', '.mov', '.m4v')
+IMG_EXTS = ('.png', '.gif', '.jpeg', '.tif', '.tiff', '.jpg', '.bmp', '.svg')
+DOC_EXTS = ('.doc', '.docx', '.pdf', '.txt', '.rtf', '.html', '.epub')
+CATEGORIES = (
+    Category(name="Folders", prefix="📁"),
+    Category(name="Videos", prefix="🎬"),
+    Category(name="Images", prefix="🖼"),
+    Category(name="Documents", prefix="📄"),
+    Category(name="Other", prefix=""),
+)
+
+
 env = Environment(
     loader=PackageLoader('srv', 'templates'),
     autoescape=select_autoescape(['html', 'xml'])
 )
-dir_template = env.get_template('directory.html')
 
 
 class DirLister(DirectoryLister):
     def render(self, request):
+        dir_template = env.get_template('directory.html')
         request.setHeader('Content-Type', 'text/html; charset=utf-8')
 
         path = Path(self.path)
+        contents = {
+            "Folders": [],
+            "Videos": [],
+            "Images": [],
+            "Documents": [],
+            "Other": []
+        }
+        for child in path.iterdir():
+            if child.is_dir():
+                contents["Folders"].append(child)
+            elif child.suffix in VID_EXTS:
+                contents["Videos"].append(child)
+            elif child.suffix in IMG_EXTS:
+                contents["Images"].append(child)
+            elif child.suffix in DOC_EXTS:
+                contents["Documents"].append(child)
+            else:
+                contents["Other"].append(child)
+
         html = dir_template.render(
-            path=path
+            path=path,
+            contents=contents,
+            categories=CATEGORIES,
         )
         return html.encode('utf-8')
 
