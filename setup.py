@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="srv",
-    version="1.0.0",
+    version="1.0.2",
     author="David Teresi",
     author_email="dkteresi@gmail.com",
     description="Serve a directory with one command",
@@ -21,7 +21,10 @@ setuptools.setup(
         "Topic :: Internet :: WWW/HTTP :: HTTP Servers",
         "Typing :: Typed",
     ],
-    install_requires=setuptools.find_packages(),
+    install_requires=[
+        "twisted",
+        "jinja2",
+    ],
     python_requires='>=3.6',
     entry_points={
         'console_scripts': [
