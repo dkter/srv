@@ -118,7 +118,8 @@ def main():
                         help="the directory to serve")
     parser.add_argument('-p', '--port', type=int, default=8000,
                         help="the port to listen on")
-    parser.add_argument('-r', '--raw', type=str, nargs='?', const=None, default=argparse.SUPPRESS,
+    parser.add_argument('-r', '--raw', type=str, nargs='?', const=None,
+                        default=argparse.SUPPRESS,
                         help="the port to listen on")
     args = parser.parse_args()
 
