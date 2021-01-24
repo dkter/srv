@@ -9,6 +9,7 @@ defined by the Mozilla Public License, v. 2.0.
 
 import argparse
 import socket
+import sys
 from collections import namedtuple
 from pathlib import Path
 from typing import Dict, List, Callable
@@ -90,9 +91,24 @@ class DirPage(File):
                          self.defaultType)
 
 
+class TextPage(resource.Resource):
+    isLeaf = True
+
+    def __init__(self, text: str) -> None:
+        super().__init__()
+        self.text = text
+
+    def render_GET(self, request) -> bytes:
+        request.setHeader(b"Content-Type", b"text/plain")
+        return self.text.encode("utf-8")
+
+
 def printStatus(dir: str, port: int) -> Callable[[int], None]:
     def onIP(ip: int):
-        print(f"Serving {dir} on {ip}:{port}")
+        if dir is not None:
+            print(f"Serving {dir} on {ip}:{port}")
+        else:
+            print(f"Serving on {ip}:{port}")
     return onIP
 
 
@@ -102,14 +118,23 @@ def main():
                         help="the directory to serve")
     parser.add_argument('-p', '--port', type=int, default=8000,
                         help="the port to listen on")
+    parser.add_argument('-r', '--raw', type=str, nargs='?', const=None, default=argparse.SUPPRESS,
+                        help="the port to listen on")
     args = parser.parse_args()
 
-    resource = DirPage(args.dir)
+    if 'raw' not in args:
+        resource = DirPage(args.dir)
+        dir = args.dir
+    else:
+        if args.raw is None:
+            args.raw = sys.stdin.read()
+        resource = TextPage(args.raw)
+        dir = None
     factory = server.Site(resource)
     endpoint = endpoints.TCP4ServerEndpoint(reactor, args.port)
 
     endpoint.listen(factory)
-    reactor.resolve(socket.getfqdn()).addCallback(printStatus(args.dir, args.port))
+    reactor.resolve(socket.getfqdn()).addCallback(printStatus(dir, args.port))
     reactor.run()
 
 
